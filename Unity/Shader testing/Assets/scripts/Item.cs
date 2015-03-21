@@ -10,7 +10,7 @@ public class Item : MonoBehaviour
     {
         if(this.PickedUp)
         {
-            this.transform.position = Player.Instance.ItemsPos.position + (new Vector3(1, 0, 0) * Player.Instance.ItemDistance * (Player.Instance.Items.Count - 1));
+            this.transform.position = Player.Instance.ItemsPos.position + (new Vector3(1, 0, 0) * Player.Instance.ItemDistance * Player.Instance.Items.IndexOf(this));
         }
     }
 
@@ -25,6 +25,7 @@ public class Item : MonoBehaviour
                     if (this.id == item.id)
                     {
                         Player.Instance.RemoveBurden(burden);
+						Player.Instance.RemoveItem(this);
                         GameObject.Destroy(this.gameObject);
                         return;
                     }

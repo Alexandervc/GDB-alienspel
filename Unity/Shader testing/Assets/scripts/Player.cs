@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     public GameObject[] BurdenPrefabs;
 
     public List<Burden> Burdens;
-    public int MaxBurdens = 6;
+    public int MaxBurdensGoal = 6;
 
     public List<Item> Items;
     public int MaxItems = 5;
@@ -18,6 +18,16 @@ public class Player : MonoBehaviour
     public float ItemDistance = 0.1f;
 
     public float Speed = 1f;
+
+	public int SolvedBurdens = 0;
+
+	public float MaxSpawnDelay = 7.5f;
+	public float MinSpawnDelay = 0.5f;
+	public float DeltaSpawnDelay = 0.5f;
+
+	private float spawnDelay = 1f;
+
+	private int maxBurdens = 1;
 
     private bool spawning = false;
 
@@ -36,11 +46,11 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        if (this.Burdens.Count < this.MaxBurdens && !spawning)
+        if (this.Burdens.Count < this.maxBurdens && !spawning)
         {
             this.spawning = true;
 
-            this.StartCoroutine(this.SpawnBurdenAfter(Random.Range(0.5f, 3.5f)));
+            this.StartCoroutine(this.SpawnBurdenAfter(Random.Range(this.spawnDelay - this.DeltaSpawnDelay, this.spawnDelay)));
         }
 
         this.transform.position += new Vector3(1, 0, 0) * this.Speed * Time.deltaTime;
@@ -80,6 +90,11 @@ public class Player : MonoBehaviour
         this.Speed = this.Speed * obj.GetComponent<Burden>().SpeedModifier;
 
         this.spawning = false;
+
+		if(this.SolvedBurdens == 0)
+		{
+			this.spawnDelay = this.MaxSpawnDelay;
+		}
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -89,7 +104,6 @@ public class Player : MonoBehaviour
             if(this.Items.Count < this.MaxItems)
             {
                 this.Items.Add(other.GetComponent<Item>());
-                other.transform.position = ItemsPos.position + (new Vector3(1, 0, 0) * ItemDistance * (this.Items.Count - 1));
                 other.GetComponent<Item>().PickedUp = true;
             }     
         }
@@ -112,8 +126,25 @@ public class Player : MonoBehaviour
     {
         this.Burdens.Remove(burden);
 
+		this.SolvedBurdens++;
+
+		if(this.maxBurdens < this.MaxBurdensGoal) 
+		{
+			this.maxBurdens++;
+		}
+
+		if(this.spawnDelay > this.MinSpawnDelay) 
+		{
+			this.spawnDelay -= this.DeltaSpawnDelay;
+		}
+
         this.Speed /= burden.SpeedModifier;
 
         GameObject.Destroy(burden.gameObject);
     }
+
+	public void RemoveItem(Item item)
+	{
+		this.Items.Remove (item);
+	}
 }
