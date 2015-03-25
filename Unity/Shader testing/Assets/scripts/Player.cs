@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
 	public float MinSpawnDelay = 0.5f;
 	public float DeltaSpawnDelay = 0.5f;
 
+    public bool spawnAtRandom = false;
+
 	private float spawnDelay = 1f;
 
 	private int maxBurdens = 1;
@@ -46,7 +48,7 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        if (this.Burdens.Count < this.maxBurdens && !spawning)
+        if (this.Burdens.Count < this.maxBurdens && !spawning && spawnAtRandom)
         {
             this.spawning = true;
 
@@ -105,7 +107,33 @@ public class Player : MonoBehaviour
             {
                 this.Items.Add(other.GetComponent<Item>());
                 other.GetComponent<Item>().PickedUp = true;
-            }     
+            }
+        }
+        else if (other.tag == "SpawnBurden")
+        {
+            SpawnBurdenEvent sbe = other.GetComponent<SpawnBurdenEvent>();
+
+            this.spawnBurden(sbe.burdenToSpawn);
+
+            Destroy(other.gameObject);
+        }
+    }
+
+    public void spawnBurden(Burden burdenToSpawn)
+    {
+        foreach (GameObject pref in this.BurdenPrefabs)
+        {
+            Burden burden = pref.GetComponent<Burden>();
+            if (burden.Id == burdenToSpawn.Id)
+            {
+                GameObject obj = (GameObject)GameObject.Instantiate(pref);
+                obj.transform.position = this.transform.position + new Vector3(0, 1, 0) * (1f * (this.Burdens.Count + 1) + 1f);
+
+                this.Burdens.Add(obj.GetComponent<Burden>());
+
+                this.Speed = this.Speed * obj.GetComponent<Burden>().SpeedModifier;
+                break;
+            }
         }
     }
 
@@ -147,4 +175,12 @@ public class Player : MonoBehaviour
 	{
 		this.Items.Remove (item);
 	}
+
+    public void SpawnItem(GameObject item)
+    {
+        Vector3 spawnPos = this.transform.FindChild("SpawnItemPos").transform.position;
+
+        GameObject obj = (GameObject)GameObject.Instantiate(item);
+        obj.transform.position = spawnPos;
+    }
 }

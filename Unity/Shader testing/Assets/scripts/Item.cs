@@ -26,6 +26,10 @@ public class Item : MonoBehaviour
                     {
                         Player.Instance.RemoveBurden(burden);
 						Player.Instance.RemoveItem(this);
+
+                        ItemUseEvent useEvent = this.GetComponent<ItemUseEvent>();
+                        if (useEvent != null) useEvent.Fire();
+
                         GameObject.Destroy(this.gameObject);
                         return;
                     }
