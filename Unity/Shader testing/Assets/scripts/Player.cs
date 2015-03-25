@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -29,6 +30,10 @@ public class Player : MonoBehaviour
 
 	public GameObject CrossPrefab;
 
+	public Text WinLoseText;
+	public Text ScoreText;
+	public int Score = 0;
+
 	private float spawnDelay = 1f;
 
 	private int maxBurdens = 1;
@@ -58,6 +63,8 @@ public class Player : MonoBehaviour
         }
 
         this.transform.position += new Vector3(1, 0, 0) * this.Speed * Time.deltaTime;
+
+		this.ScoreText.text = "Score: " + Score;
 	}
     
     IEnumerator SpawnBurdenAfter(float seconds)
@@ -95,7 +102,7 @@ public class Player : MonoBehaviour
 
         this.spawning = false;
 
-		if(this.SolvedBurdens == 0)
+		if(!this.spawnAtRandom)
 		{
 			this.spawnDelay = this.MaxSpawnDelay;
 		}
@@ -124,7 +131,24 @@ public class Player : MonoBehaviour
 
             Destroy(other.gameObject);
         }
+		else if (other.tag == "Finish")
+		{
+			this.WinLoseText.text = "Finish";
+			this.StartCoroutine(this.resetLevel());
+		}
     }
+
+	public void GameOver()
+	{
+		this.WinLoseText.text = "Game Over";
+		this.StartCoroutine (this.resetLevel());
+	}
+
+	private IEnumerator resetLevel()
+	{
+		yield return new WaitForSeconds (2);
+		Application.LoadLevel(0);
+	}
 
     public void spawnBurden(Burden burdenToSpawn)
     {

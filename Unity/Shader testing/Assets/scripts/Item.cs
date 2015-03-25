@@ -26,6 +26,7 @@ public class Item : MonoBehaviour
                     {
                         Player.Instance.RemoveBurden(burden);
 						Player.Instance.RemoveItem(this);
+						Player.Instance.Score++;
 
                         ItemUseEvent useEvent = this.GetComponent<ItemUseEvent>();
                         if (useEvent != null) useEvent.Fire();
@@ -35,6 +36,14 @@ public class Item : MonoBehaviour
                     }
                 }
             }
+			if(Player.Instance.Score > 0) 
+			{
+				Player.Instance.Score--;
+			}
+			else
+			{
+				Player.Instance.GameOver();
+			}
         }
     }
 }
