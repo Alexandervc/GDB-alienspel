@@ -27,6 +27,8 @@ public class Player : MonoBehaviour
 
     public bool spawnAtRandom = false;
 
+	public GameObject CrossPrefab;
+
 	private float spawnDelay = 1f;
 
 	private int maxBurdens = 1;
@@ -107,6 +109,11 @@ public class Player : MonoBehaviour
             {
                 this.Items.Add(other.GetComponent<Item>());
                 other.GetComponent<Item>().PickedUp = true;
+				
+				GameObject cross = (GameObject) Instantiate(this.CrossPrefab);
+				cross.transform.position = other.transform.position + new Vector3(0.5f, 0.5f, 0);
+				cross.transform.parent = other.transform;
+				cross.GetComponent<Cross>().item = other.gameObject;
             }
         }
         else if (other.tag == "SpawnBurden")
@@ -133,7 +140,7 @@ public class Player : MonoBehaviour
 
                 this.Speed = this.Speed * obj.GetComponent<Burden>().SpeedModifier;
                 break;
-            }
+            }   
         }
     }
 
