@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     public static Player Instance = null;
 
     public GameObject[] BurdenPrefabs;
+    public GameObject[] ItemPrefabs;
 
     public List<Burden> Burdens;
     public int MaxBurdensGoal = 6;
@@ -17,6 +18,8 @@ public class Player : MonoBehaviour
 
     public Transform ItemsPos;
     public float ItemDistance = 0.1f;
+
+    public Transform SpawnItemPos;
 
     public float Speed = 1f;
 
@@ -38,7 +41,8 @@ public class Player : MonoBehaviour
 
 	private int maxBurdens = 1;
 
-    private bool spawning = false;
+    private bool spawningBurden = false;
+    private bool spawningItem = false;
 
     void Awake()
     {
@@ -57,17 +61,41 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        if (this.Burdens.Count < this.maxBurdens && (!spawning) && spawnAtRandom)
+        if (this.Burdens.Count < this.maxBurdens && (!spawningBurden) && spawnAtRandom)
         {
-            this.spawning = true;
+            this.spawningBurden = true;
 
             this.StartCoroutine(this.SpawnBurdenAfter(Random.Range(this.spawnDelay - this.DeltaSpawnDelay, this.spawnDelay)));
+        }
+
+        if (!this.spawningItem && spawnAtRandom)
+        {
+            this.spawningItem = true;
+
+            this.StartCoroutine(this.SpawnItemAfter(Random.Range(this.spawnDelay - this.DeltaSpawnDelay, this.spawnDelay)));
         }
 
         this.transform.position += new Vector3(1, 0, 0) * this.Speed * Time.deltaTime;
 
 		this.ScoreText.text = "Score: " + Score;
 	}
+
+    IEnumerator SpawnItemAfter(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        this.SpawnRandomItem();
+    }
+
+    private void SpawnRandomItem()
+    {
+        int index = Random.Range(0, this.ItemPrefabs.Length);
+
+        GameObject obj = (GameObject)GameObject.Instantiate(this.ItemPrefabs[index]);
+        obj.transform.position = SpawnItemPos.position;
+
+        this.spawningItem = false;
+    }
     
     IEnumerator SpawnBurdenAfter(float seconds)
     {
@@ -102,7 +130,7 @@ public class Player : MonoBehaviour
 
         this.Speed = this.Speed * obj.GetComponent<Burden>().SpeedModifier;
 
-        this.spawning = false;
+        this.spawningBurden = false;
 
 		if(!this.spawnAtRandom)
 		{
