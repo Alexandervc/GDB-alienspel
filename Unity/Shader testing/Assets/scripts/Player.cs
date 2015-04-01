@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
 
     public bool spawnAtRandom = true;
 
-	public GameObject CrossPrefab;
+	public GameObject ItemWrapperPrefab;
 
 	public Text WinLoseText;
 	public Text ScoreText;
@@ -146,11 +146,20 @@ public class Player : MonoBehaviour
             {
                 this.Items.Add(other.GetComponent<Item>());
                 other.GetComponent<Item>().PickedUp = true;
-				
-				GameObject cross = (GameObject) Instantiate(this.CrossPrefab);
-				cross.transform.position = other.transform.position + new Vector3(0.5f, 0.5f, 0);
-				cross.transform.parent = other.transform;
-				cross.GetComponent<Cross>().item = other.gameObject;
+
+				GameObject wrapper = (GameObject) Instantiate(this.ItemWrapperPrefab);
+				wrapper.transform.position = other.transform.position;
+				wrapper.transform.parent = other.transform;
+				wrapper.GetComponent<ItemWrapper>().Item = other.gameObject;
+
+				// Generate random button
+				int random = -1;
+				do {
+					random = Random.Range(0, InputManager.Instance.ItemButtons.Length);
+				} while(InputManager.Instance.GetItemWrapper(InputManager.Instance.ItemButtons[random]) != null);
+				wrapper.GetComponent<ItemWrapper>().Button = InputManager.Instance.ItemButtons[random];
+
+				InputManager.Instance.Wrappers.Add(wrapper.GetComponent<ItemWrapper>());
             }
         }
         else if (other.tag == "SpawnBurden")
