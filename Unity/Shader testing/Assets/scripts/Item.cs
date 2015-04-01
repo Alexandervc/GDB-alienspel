@@ -14,7 +14,7 @@ public class Item : MonoBehaviour
         }
     }
 
-	void OnMouseDown()
+	public void Use(ItemWrapper wrapper)
     {
         if(PickedUp)
         {
@@ -24,6 +24,9 @@ public class Item : MonoBehaviour
                 {
                     if (this.id == item.id)
                     {
+						InputManager.Instance.Wrappers.Remove(wrapper);
+						wrapper.renderer.material.color = Color.green;
+
                         Player.Instance.RemoveBurden(burden);
 						Player.Instance.RemoveItem(this);
 						Player.Instance.Score++;
@@ -31,7 +34,8 @@ public class Item : MonoBehaviour
                         ItemUseEvent useEvent = this.GetComponent<ItemUseEvent>();
                         if (useEvent != null) useEvent.Fire();
 
-                        GameObject.Destroy(this.gameObject);
+                        GameObject.Destroy(this.gameObject, 0.5f);
+						GameObject.Destroy(wrapper.gameObject, 0.5f);
                         return;
                     }
                 }
@@ -44,6 +48,8 @@ public class Item : MonoBehaviour
 			{
 				Player.Instance.GameOver();
 			}
+			wrapper.renderer.material.color = Color.red;
+			this.StartCoroutine(wrapper.ResetColor());
         }
     }
 }
