@@ -23,19 +23,11 @@ public class Item : MonoBehaviour
                 foreach (Item item in burden.SolvedBy)
                 {
                     if (this.id == item.id)
-                    {
-						InputManager.Instance.Wrappers.Remove(wrapper);
-						wrapper.renderer.material.color = Color.green;
+					{
+						wrapper.sRenderer.color = Color.green;
 
-                        Player.Instance.RemoveBurden(burden);
-						Player.Instance.RemoveItem(this);
-						Player.Instance.Score++;
+						this.StartCoroutine(this.DoUse(wrapper, burden));
 
-                        ItemUseEvent useEvent = this.GetComponent<ItemUseEvent>();
-                        if (useEvent != null) useEvent.Fire();
-
-                        GameObject.Destroy(this.gameObject, 0.5f);
-						GameObject.Destroy(wrapper.gameObject, 0.5f);
                         return;
                     }
                 }
@@ -48,8 +40,24 @@ public class Item : MonoBehaviour
 			{
 				Player.Instance.GameOver();
 			}
-			wrapper.renderer.material.color = Color.red;
+			wrapper.sRenderer.color = Color.red;
 			this.StartCoroutine(wrapper.ResetColor());
-        }
+		}
     }
+
+	private IEnumerator DoUse(ItemWrapper wrapper, Burden burden) {
+		yield return new WaitForSeconds(0.5f);
+
+		InputManager.Instance.Wrappers.Remove(wrapper);
+		
+		Player.Instance.RemoveBurden(burden);
+		Player.Instance.RemoveItem(this);
+		Player.Instance.Score++;
+		
+		ItemUseEvent useEvent = this.GetComponent<ItemUseEvent>();
+		if (useEvent != null) useEvent.Fire();
+		
+		GameObject.Destroy(this.gameObject);
+		GameObject.Destroy(wrapper.gameObject);
+	}
 }

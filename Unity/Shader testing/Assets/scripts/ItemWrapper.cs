@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class ItemWrapper : MonoBehaviour {
 	public string Button;
 	public GameObject Item;
 
+	public SpriteRenderer sRenderer;
+	public Text ButtonText;
+	public Canvas Canvas;
+
 	// Use this for initialization
 	void Start () {
-	
 	}
 	
 	// Update is called once per frame
@@ -17,12 +21,17 @@ public class ItemWrapper : MonoBehaviour {
 
 	public void DeleteItem() {
 		if (this.Item != null) {
-			InputManager.Instance.Wrappers.Remove(this);
-			this.renderer.material.color = Color.yellow;
-			Player.Instance.RemoveItem(Item.GetComponent<Item>());
-			Destroy (Item, 0.5f);
-			Destroy (this.gameObject, 0.5f);
+			sRenderer.color = Color.yellow;
+			this.StartCoroutine(this.DoDelete());
 		}
+	}
+
+	private IEnumerator DoDelete() {
+		yield return new WaitForSeconds (0.5f);
+		InputManager.Instance.Wrappers.Remove(this);
+		Player.Instance.RemoveItem(Item.GetComponent<Item>());
+		Destroy (Item);
+		Destroy (this.gameObject);
 	}
 
 	public void UseItem() {
@@ -33,6 +42,6 @@ public class ItemWrapper : MonoBehaviour {
 
 	public IEnumerator ResetColor() {
 		yield return new WaitForSeconds (1f);
-		this.renderer.material.color = Color.white;
+		sRenderer.color = Color.white;
 	}
 }

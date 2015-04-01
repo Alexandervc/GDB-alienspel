@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
 {
     public static Player Instance = null;
 
+	public Camera Cam;
+
     public GameObject[] BurdenPrefabs;
     public GameObject[] ItemPrefabs;
 
@@ -34,6 +36,7 @@ public class Player : MonoBehaviour
 	public GameObject ItemWrapperPrefab;
 
 	public Text WinLoseText;
+	public Text InstructionsText;
 	public Text ScoreText;
 	public int Score = 0;
 
@@ -56,6 +59,14 @@ public class Player : MonoBehaviour
 
         this.Burdens = new List<Burden>();
         this.Items = new List<Item>();
+
+		this.InstructionsText.text = "Linkerbeen: W-A-S-D \nRechterbeen: I-J-K-L";
+		this.StartCoroutine (this.ResetInstructionsText ());
+	}
+
+	private IEnumerator ResetInstructionsText() {
+		yield return new WaitForSeconds (3f);
+		this.InstructionsText.text = "";
 	}
 	
 	// Update is called once per frame
@@ -149,7 +160,8 @@ public class Player : MonoBehaviour
 
 				GameObject wrapper = (GameObject) Instantiate(this.ItemWrapperPrefab);
 				wrapper.transform.position = other.transform.position;
-				wrapper.transform.parent = other.transform;
+				wrapper.transform.SetParent(other.transform);
+				wrapper.GetComponent<ItemWrapper>().Canvas.worldCamera = this.Cam;
 				wrapper.GetComponent<ItemWrapper>().Item = other.gameObject;
 
 				// Generate random button
@@ -158,6 +170,7 @@ public class Player : MonoBehaviour
 					random = Random.Range(0, InputManager.Instance.ItemButtons.Length);
 				} while(InputManager.Instance.GetItemWrapper(InputManager.Instance.ItemButtons[random]) != null);
 				wrapper.GetComponent<ItemWrapper>().Button = InputManager.Instance.ItemButtons[random];
+				wrapper.GetComponent<ItemWrapper>().ButtonText.text = InputManager.Instance.ItemButtons[random];
 
 				InputManager.Instance.Wrappers.Add(wrapper.GetComponent<ItemWrapper>());
             }
