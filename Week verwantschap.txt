@@ -1,0 +1,7 @@
+- Benen laten lopen - Stan
+- Items spawn at random - Stan
+- Items spawnen gebaseert op spawn snelheid burdens - Stan
+- Items dichterbij spawnen - Stan
+- Items gebruik op random knoppen zetten - Alexander
+- Verwijderen items met modifier key - Alexander
+- Kleur knoppen veranderen gebaseert op goed/fout - Alexander

@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
 	public float MinSpawnDelay = 0.5f;
 	public float DeltaSpawnDelay = 0.5f;
 
-    public bool spawnAtRandom = false;
+    public bool spawnAtRandom = true;
 
 	public GameObject CrossPrefab;
 
@@ -48,6 +48,8 @@ public class Player : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
+        this.spawnDelay = this.MaxSpawnDelay;
+
         this.Burdens = new List<Burden>();
         this.Items = new List<Item>();
 	}
@@ -55,7 +57,7 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        if (this.Burdens.Count < this.maxBurdens && !spawning && spawnAtRandom)
+        if (this.Burdens.Count < this.maxBurdens && (!spawning) && spawnAtRandom)
         {
             this.spawning = true;
 
