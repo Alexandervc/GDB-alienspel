@@ -63,6 +63,11 @@ public class FootDriver : MonoBehaviour
             {
                 this.Extending = true;
             }
+
+            //if(direction.y < 0)
+            //{
+            //    this.Extending = true;
+            //}
         }
 
         if (this.Grounded && direction.y < 0) direction.y = 0;

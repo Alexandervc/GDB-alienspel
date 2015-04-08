@@ -47,6 +47,8 @@ public class Player : MonoBehaviour
     private bool spawningBurden = false;
     private bool spawningItem = false;
 
+    private Movement movement;
+
     void Awake()
     {
         Player.Instance = this;
@@ -59,6 +61,8 @@ public class Player : MonoBehaviour
 
         this.Burdens = new List<Burden>();
         this.Items = new List<Item>();
+
+        this.movement = this.GetComponent<Movement>();
 
 		this.InstructionsText.text = "Linkerbeen: W-A-S-D \nRechterbeen: I-J-K-L";
 		this.StartCoroutine (this.ResetInstructionsText ());
@@ -86,7 +90,7 @@ public class Player : MonoBehaviour
             this.StartCoroutine(this.SpawnItemAfter(Random.Range(this.spawnDelay - this.DeltaSpawnDelay, this.spawnDelay)));
         }
 
-        this.transform.position += new Vector3(1, 0, 0) * this.Speed * Time.deltaTime;
+        //this.transform.position += new Vector3(1, 0, 0) * this.Speed * Time.deltaTime;
 
 		this.ScoreText.text = "Score: " + Score;
 	}
@@ -137,9 +141,12 @@ public class Player : MonoBehaviour
         GameObject obj = (GameObject)GameObject.Instantiate(this.BurdenPrefabs[index]);
         obj.transform.position = this.transform.position + new Vector3(0, 1, 0) * (1f * (this.Burdens.Count + 1) + 1f);
 
-        this.Burdens.Add(obj.GetComponent<Burden>());
+        if (this.Burdens.Count == 0)
+        {
+            this.movement.SetFootSpeedMultiplier(obj.GetComponent<Burden>().SpeedModifier);
+        }
 
-        this.Speed = this.Speed * obj.GetComponent<Burden>().SpeedModifier;
+        this.Burdens.Add(obj.GetComponent<Burden>());
 
         this.spawningBurden = false;
 
@@ -212,9 +219,13 @@ public class Player : MonoBehaviour
                 GameObject obj = (GameObject)GameObject.Instantiate(pref);
                 obj.transform.position = this.transform.position + new Vector3(0, 1, 0) * (1f * (this.Burdens.Count + 1) + 1f);
 
+                if(this.Burdens.Count == 0)
+                {
+                    this.movement.SetFootSpeedMultiplier(obj.GetComponent<Burden>().SpeedModifier);
+                }
+
                 this.Burdens.Add(obj.GetComponent<Burden>());
 
-                this.Speed = this.Speed * obj.GetComponent<Burden>().SpeedModifier;
                 break;
             }   
         }
@@ -249,7 +260,10 @@ public class Player : MonoBehaviour
 			this.spawnDelay -= this.DeltaSpawnDelay;
 		}
 
-        this.Speed /= burden.SpeedModifier;
+        if(this.Burdens.Count == 0)
+        {
+            this.movement.SetFootSpeedMultiplier(1F / burden.SpeedModifier);
+        }
 
         GameObject.Destroy(burden.gameObject);
     }

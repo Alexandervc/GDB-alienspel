@@ -43,6 +43,19 @@ public class Movement : MonoBehaviour
         }
 	}
 
+    public void MoveFeet(Vector3 movement)
+    {
+        //Foot1.transform.position += movement;
+        //Foot2.transform.position += movement;
+        this.transform.position += movement;
+    }
+
+    public void SetFootSpeedMultiplier(float mutliplier)
+    {
+        this.Foot1.Speed *= mutliplier;
+        this.Foot2.Speed *= mutliplier;
+    }
+
     private void MoveTowardsFoot(FootDriver lifted, FootDriver grounded)
     {
         if(lifted.CurrentDistance > lifted.ExtendedDistance)
